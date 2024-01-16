@@ -17,7 +17,7 @@
 # NodeJS is required!
 # https://nodejs.org/en/download/current
 
-git clone https://github.com/0xStarLabs/STAR-LABS-LAYER-ZERO.git
+git clone https://github.com/0xStarLabs/Web3Go-Reiki-Autoreger.git
 
 cd StarLabs-Discord
 
