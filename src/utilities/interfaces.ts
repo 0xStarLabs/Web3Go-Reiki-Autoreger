@@ -73,3 +73,23 @@ export interface QuizQuestionResponse {
     currentProgress: number;
     totalItemCount: number;
 }
+
+export interface GiftResponse {
+    id: string;
+    userWalletAddress: string;
+    points: number;
+    name: string;
+    description: string;
+    image: string;
+    openedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+    expiresAt: string | null;
+    deletedAt: string | null;
+    tags: Tag[];
+}
+
+interface Tag {
+    id: string;
+    name: string;
+}
