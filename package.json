@@ -1,0 +1,21 @@
+{
+  "name": "Reiki",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsc && node ./dist/src/index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.10.5",
+    "ccxt": "^4.2.13",
+    "dayjs": "^1.11.10",
+    "ethers": "^5.7.2",
+    "got": "^13.0.0",
+    "https-proxy-agent": "^7.0.2",
+    "socks-proxy-agent": "^8.0.2",
+    "typescript": "^5.3.3",
+    "winston": "^3.11.0"
+  }
+}
