@@ -6,7 +6,7 @@ import {handleResponse, retry} from "../utilities/wrappers.js";
 import logger from "../utilities/logger.js";
 import {CONTRACT, QUIZES} from "../utilities/constants.js";
 import {getRandomDigital} from "../utilities/random.js";
-import {IDS, LoginResponse, QuizQuestionResponse, QuizResponse} from "../utilities/interfaces.js";
+import {IDS, LoginResponse, QuizQuestionResponse, QuizResponse, GiftResponse} from "../utilities/interfaces.js";
 import {sleep} from "../utilities/common.js";
 
 export class Reiki {
@@ -105,7 +105,7 @@ export class Reiki {
                 logger.success(`| ${this.walletNumber} | ${this.address} | Successfully checked in`);
             });
         } catch (error: any) {
-            throw new Error("Error in Reiki - checkIn: " + error.message);
+            logger.error("Error in Reiki - checkIn: " + error.message);
         }
     }
 
@@ -151,11 +151,31 @@ export class Reiki {
                 }
             });
         } catch (error: any) {
-            throw new Error("Error in Reiki - quiz: " + error.message);
+            logger.error("Error in Reiki - quiz: " + error.message);
         }
     }
 
-
+    private async giftOpen() {
+        try {
+            return await retry(async () => {
+                logger.info(`| ${this.walletNumber} | ${this.address} | Opening Gift`);
+                const recentGiftsRaw = await this.client.get(
+                    `https://reiki.web3go.xyz/api/gift`,
+                    {
+                        searchParams: {
+                            'type': 'recent',
+                        },
+                        responseType: 'json'
+                    });
+                const recentGifts = recentGiftsRaw.body as GiftResponse[];
+                const giftId = recentGifts[0].id;
+                await this.client.post(`https://reiki.web3go.xyz/api/gift/open/${giftId}`);
+                logger.success(`| ${this.walletNumber} | ${this.address} | Successfully Opened Gift`);
+            });
+        } catch (error: any) {
+            logger.error("Error in Reiki - giftOpen: " + error.message);
+        }
+    }
     async execute() {
         try {
             return await retry(async () => {
@@ -165,11 +185,16 @@ export class Reiki {
                         'authorization': `Bearer ${token}`,
                     }
                 });
-
-                const nftCount: number = await this.getNftCount()
+                await sleep(5, 10)
+                const nftCount: number = await this.getNftCount();
                 if (nftCount == 0) {
                     await this.mint();
+                    await sleep(5, 10)
+                    await this.checkIn();
+                    await sleep(5, 10)
+                    await this.giftOpen();
                 }
+
                 if (quizes) {
                     await this.quiz()
                 }
