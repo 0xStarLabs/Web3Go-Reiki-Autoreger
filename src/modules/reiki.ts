@@ -176,6 +176,7 @@ export class Reiki {
             logger.error("Error in Reiki - giftOpen: " + error.message);
         }
     }
+    
     async execute() {
         try {
             return await retry(async () => {
