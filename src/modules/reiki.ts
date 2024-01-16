@@ -120,35 +120,33 @@ export class Reiki {
 
     private async quiz() {
         try {
-            return await retry(async () => {
-                const quizResponseRaw = await this.client.get("https://reiki.web3go.xyz/api/quiz", { responseType: 'json' });
-                const quizesRaw: QuizResponse[] = quizResponseRaw.body as QuizResponse[];
-                const quizes: IDS[] = quizesRaw.map((quiz: QuizResponse) => quiz.id);
+            const quizesRaw: QuizResponse[] = await retry(
+                () => this.client.get("https://reiki.web3go.xyz/api/quiz", { responseType: 'json' }).then(response => response.body as QuizResponse[]),
+            );
 
-                logger.info(`| ${this.walletNumber} | ${this.address} | Doing quizes`);
-                for (let quiz of quizes) {
-                    const questionsRaw = await this.client.get(`https://reiki.web3go.xyz/api/quiz/${quiz}`, {
-                        responseType: 'json'
-                    });
-                    const questions = questionsRaw.body as QuizQuestionResponse;
-                    const questionIds = questions.items.map(item => item.id);
-                    for (let i = 0; i < 5; i++) {
-                        let answer = quiz === "631bb81f-035a-4ad5-8824-e219a7ec5ccb" && i == 0 ? [this.address] : QUIZES[quiz][(i + 1).toString()];
-                        await this.client.post(
-                            `https://reiki.web3go.xyz/api/quiz/${questionIds[i]}/answer`,
-                            {
-                                json: {
-                                    'answers': answer
-                                }
-                            }
-                        );
-                        await this.client.get(`https://reiki.web3go.xyz/api/quiz/${quiz}`);
-                        logger.success(`| ${this.walletNumber} | ${this.address} | Successfully passed ${i + 1} out of 5 Questions`);
-                        await sleep(5, 10);
-                    }
-                    logger.success(`| ${this.walletNumber} | ${this.address} | Successfully passed ${quizes.indexOf(quiz) + 1} out of 6 Quizes`);
+            const quizes: IDS[] = quizesRaw.map((quiz: QuizResponse) => quiz.id);
+
+            for (let quiz of quizes) {
+                const questions = await retry(
+                    () => this.client.get(`https://reiki.web3go.xyz/api/quiz/${quiz}`, { responseType: 'json' }).then(response => response.body as QuizQuestionResponse),
+                );
+
+                const questionIds = questions.items.map(item => item.id);
+
+                for (let i = 0; i < 5; i++) {
+                    let answer = quiz === "631bb81f-035a-4ad5-8824-e219a7ec5ccb" && i == 0 ? [this.address] : QUIZES[quiz][(i + 1).toString()];
+                    await retry(
+                        () => this.client.post(`https://reiki.web3go.xyz/api/quiz/${questionIds[i]}/answer`, { json: { 'answers': answer } }),
+                    );
+
+                    await retry(
+                        () => this.client.get(`https://reiki.web3go.xyz/api/quiz/${quiz}`),
+                    );
+
+                    logger.success(`| ${this.walletNumber} | ${this.address} | Passed ${i + 1} : 5 Questions in ${quizes.indexOf(quiz) + 1} : 6 Quizes`);
+                    await sleep(5, 10);
                 }
-            });
+            }
         } catch (error: any) {
             logger.error("Error in Reiki - quiz: " + error.message);
         }
