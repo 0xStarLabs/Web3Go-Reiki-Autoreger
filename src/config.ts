@@ -12,7 +12,7 @@ export const initializationTime = 100;
 export const pause = [84000, 100000];
 
 export const exchange = {
-    withdraw: true,
+    withdraw: false,
     amountToWithdraw: [0.0003, 0.0005],
     okxInfo: {
         OKX_API_KEY: 'key',
