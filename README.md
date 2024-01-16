@@ -36,9 +36,9 @@ npm start
 
 | Name | Description |
 | --- | --- |
-| quizes | whether to pass the quiezes or not (true / false ). Reccomended true for the first launch, false for all others |
+| quizes | whether to pass the quiezes or not (true / false ). Use true for the first launch, false for all others |
 | proxyType | proxy type you are using (http / socks) |
-| gasPrice | Gas Price with which the transaction will be sent (better not touch) |
+| gasPrice | Gas Price with which the transaction will be sent (better to not touch) |
 | exchange | Choose whether to use the exchange in the exchange variable (true / false). If false - will work with what is in the wallet. If true - at startup, it will withdraw native coin. (You must have coin on OKEX to withdraw them). 
 | OKX_API_KEY |	API key |
 | OKX_SECRET_KEY | secret key (given when generating an API key) |
