@@ -20,8 +20,15 @@ class Main {
 
     async runThread(wallet: ethers.Wallet, walletNumber: number) {
         logger.info(`| ${walletNumber} | ${wallet.address} | Running thread `);
+        const clientInstance = new Client(this.proxies[walletNumber - 1]);
+        const client = await clientInstance.createClient();
+
+        const reiki = new Reiki(wallet, walletNumber, client);
+
         const balance = await getBalance(wallet.address);
-        if (balance < 0.00002) {
+        const nftCount = await reiki.getNftCount();
+
+        if (balance < 0.00002 && nftCount == 0) {
             if (!exchange.withdraw) {
                 logger.info(`| ${walletNumber} | ${wallet.address} | Skipping the wallet because the balance is too low: ${balance} and exchange withdraw is turned off`);
                 return;
@@ -31,10 +38,6 @@ class Main {
             }
         }
 
-        const clientInstance = new Client(this.proxies[walletNumber - 1]);
-        const client = await clientInstance.createClient();
-
-        const reiki = new Reiki(wallet, walletNumber, client);
         await reiki.execute()
     }
 
