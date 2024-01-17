@@ -108,7 +108,7 @@ export class Reiki {
         }
     }
 
-    private async getNftCount() {
+    async getNftCount() {
         try {
             return await retry(async () => {
                 return Number(await CONTRACT.balanceOf(this.address));
